@@ -1,8 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import { pluginResources } from '../model/path.js'
-import Config from '../components/Config.js'
 import core from '../model/replicate.js'
-import Init from '../model/init.js'
 import Log from '../utils/logs.js'
 import fetch from 'node-fetch'
 import fs from 'fs'
@@ -23,8 +21,19 @@ export class animate_diff extends plugin {
   }
 
   async animatediff(e) {
-    let config = await Config.getConfig()
     let msg = e.msg.replace(/#?ai动画/, '')
+    let motion_moduleMatch = msg.match(/动作模型(\w+)/)
+    let motion_module = motion_moduleMatch ? motion_moduleMatch[1] : 'mm_sd_v15'
+    if (!['mm_sd_v14', 'mm_sd_v15'].includes(motion_module)) {
+      e.reply('动作模型不合法，请重试');
+      return true;
+    }
+    let pathMatch = msg.match(/模型(\w+)/)
+    let path = pathMatch ? pathMatch[1] : 'toonyou_beta3.safetensors'
+    if (!['toonyou_beta3.safetensors', 'lyriel_v16.safetensors', 'rcnzCartoon3d_v10.safetensors', 'majicmixRealistic_v5Preview.safetensors', 'realisticVisionV40_v20Novae.safetensors'].includes(path)) {
+      e.reply('模型不合法，请重试');
+      return true;
+    }
     let stepMatch = msg.match(/步数(\d+)/);
     let step = stepMatch ? parseInt(stepMatch[1]) : 25;
     msg = msg.replace(/步数\d+/, '');
@@ -36,9 +45,6 @@ export class animate_diff extends plugin {
     msg = msg.replace(/种子\d+/, '');
     let n_prompt = msg.split('负面')[1] || '';
     let prompt = msg.split('负面')[0] || '';
-
-    let motion_module = config['animate-diff'].motion_module
-    let path = config['animate-diff'].path
 
     let options = {
       motion_module: motion_module,

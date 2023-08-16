@@ -1,8 +1,5 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import Config from '../components/Config.js'
 import core from '../model/replicate.js'
-import Init from '../model/init.js'
-import Log from '../utils/logs.js'
 import fetch from 'node-fetch'
 
 export class sd_xl extends plugin {
@@ -13,7 +10,7 @@ export class sd_xl extends plugin {
       event: 'message',
       priority: 5000,
       rule: [{
-        reg: '#?sdxl.*$',
+        reg: '#?xl绘图.*$',
         fnc: 'sdxl',
       }]
     })
@@ -21,8 +18,7 @@ export class sd_xl extends plugin {
   }
 
   async sdxl(e) {
-    let config = await Config.getConfig()
-    let msg = e.msg.replace(/#?sdxl/, '').trim();
+    let msg = e.msg.replace(/#?xl绘图/, '').trim();
     let widthMatch = msg.match(/宽度(\d+)/);
     let width = widthMatch ? parseInt(widthMatch[1]) : 1024;
     msg = msg.replace(/宽度\d+/, '');
@@ -47,7 +43,7 @@ export class sd_xl extends plugin {
     msg = msg.replace(/种子\d+/, '');
     let negative_prompt = msg.split('负面')[1] || '';
     let prompt = msg.split('负面')[0] || '';
-    let refineMatch = msg.match(/精修(\w+)/);
+    let refineMatch = msg.match(/精修模式(\w+)/);
     let refine = refineMatch ? refineMatch[1] : 'no_refiner';
     if (!['no_refiner', 'expert_ensemble_refiner', 'base_image_refiner'].includes(refine)) {
       e.reply('精修模式不合法，请重试');
