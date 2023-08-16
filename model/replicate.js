@@ -21,6 +21,7 @@ export default {
 	},
 	
 	get(prediction) {
+		console.log(prediction.run_logs)
 		return fetch(`https://replicate.com/api/models${prediction.version.model.absolute_url}/versions/${prediction.version_id}/predictions/${prediction.uuid}`)
 			.then(response => JSON.parse(response.body).prediction)
 	},
