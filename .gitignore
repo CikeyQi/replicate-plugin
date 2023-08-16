@@ -1,2 +1,3 @@
 node_modules/
+resources/animate_diff/
 config/config/*.yaml

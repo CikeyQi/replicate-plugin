@@ -11,6 +11,9 @@ export default {
 			'failed'
 		].includes(prediction.status)) {
 			await new Promise(_ => setTimeout(_, 250))
+			if (prediction.code === 'SIGN_IN_REQUIRED') {
+				return 'SIGN_IN_REQUIRED'
+			}
 			prediction = await this.get(prediction)
 		}
 
@@ -18,7 +21,6 @@ export default {
 	},
 	
 	get(prediction) {
-		console.log(prediction)
 		return fetch(`https://replicate.com/api/models${prediction.version.model.absolute_url}/versions/${prediction.version_id}/predictions/${prediction.uuid}`)
 			.then(response => JSON.parse(response.body).prediction)
 	},

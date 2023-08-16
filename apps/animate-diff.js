@@ -52,9 +52,14 @@ export class animate_diff extends plugin {
 
     let filePath = pluginResources + '/animate_diff/' + new Date().getTime() + '.mp4';
 
-    console.log(options)
+    await e.reply('好的，正在生成动画，请稍等...')
 
     let result = await core.run("lucataco/animate-diff:1531004ee4c98894ab11f8a4ce6206099e732c1da15121987a8eef54828f0663", options)
+
+    if (result === 'SIGN_IN_REQUIRED') {
+      await e.reply('您的IP已达到免费次数上限，请等会再次尝试', true);
+      return true
+    }
 
     if (result) {
       try {
@@ -68,18 +73,16 @@ export class animate_diff extends plugin {
         response.body.pipe(writer);
         await new Promise((resolve, reject) => {
           writer.on('finish', () => {
+            e.reply([segment.at(e.user_id),'好啦好啦，动画生成好啦！'], true);
             e.reply(segment.video(filePath));
             resolve();
           });
           writer.on('error', (err) => {
-            Log.e('视频下载失败', err);
-            e.reply('下载视频失败，请重试');
             reject(err);
           });
         });
       } catch (err) {
         Log.e('视频下载失败', err);
-        e.reply('下载视频失败，请重试');
         throw err;
       }
     } else {
