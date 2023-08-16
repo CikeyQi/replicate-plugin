@@ -65,8 +65,8 @@ export class animate_diff extends plugin {
       try {
         const response = await fetch(result);
         if (!response.ok) {
-          Log.e('视频下载失败', response.status, response.statusText);
-          e.reply('下载视频失败，请重试');
+          Log.e('视频获取失败', response.status, response.statusText);
+          e.reply('视频获取失败，请重试');
           return true;
         }
         const writer = fs.createWriteStream(filePath);
@@ -83,10 +83,9 @@ export class animate_diff extends plugin {
         });
       } catch (err) {
         Log.e('视频下载失败', err);
-        throw err;
+        e.reply('下载视频失败，请重试');
       }
     } else {
-      Log.e('动画生成失败');
       e.reply('动画生成失败，请重试');
     }
     return false
